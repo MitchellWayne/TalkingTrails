@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">UntitledCS118Proj</string>
+    <string name="appTitle">Untitled CS118 Project</string>
+    <string name="splashT">Please Login or Create an account</string>
+    <string name="usr">Username</string>
+    <string name="pass">Password</string>
+    <string name="login">Login</string>
+    <string name="create">Create an account</string>
+
+    <string name="newusr">New Username</string>
+    <string name="newpass">New Password</string>
+    <string name="confirmpass">Confirm Password</string>
+</resources>
