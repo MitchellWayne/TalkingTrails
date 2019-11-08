@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1029809088821",
+    "firebase_url": "https://talking-trails.firebaseio.com",
+    "project_id": "talking-trails",
+    "storage_bucket": "talking-trails.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029809088821:android:d696b671a8dbb4b4ffc47c",
+        "android_client_info": {
+          "package_name": "com.example.untitledcs118proj"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1029809088821-tk303ukmantkqu2udncfic39hevoi2j1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXGiJ1n06sYssYIOpxkWw42PbDOC80ldM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1029809088821-tk303ukmantkqu2udncfic39hevoi2j1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

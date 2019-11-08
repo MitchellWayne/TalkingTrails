@@ -10,9 +10,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 public class UploadActivity extends AppCompatActivity {
 
@@ -20,11 +27,18 @@ public class UploadActivity extends AppCompatActivity {
     ImageView imageToUpload;
     Button uploadButton;
     EditText caption;
+    Uri filepath;
+    //Firebase
+    FirebaseStorage storage;
+    StorageReference storageReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
+        //Firebase
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
 
         imageToUpload = (ImageView) findViewById(R.id.imageToUpload);
         uploadButton = (Button) findViewById(R.id.uploadImage);
@@ -41,7 +55,7 @@ public class UploadActivity extends AppCompatActivity {
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                uploadImage();
             }
         });
     }
@@ -50,28 +64,28 @@ public class UploadActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data != null){
-            Uri selectedImage = data.getData();
-            imageToUpload.setImageURI(selectedImage);
+            filepath = data.getData();
+            imageToUpload.setImageURI(filepath);
         }
     }
 
-    private class UploadImage extends AsyncTask<Void, Void, Void> {
-        Bitmap image;
-        String name;
+    private void uploadImage() {
+        if(filepath != null)
+        {
+            StorageReference ref = storageReference.child("images/"+filepath.getLastPathSegment());
+            UploadTask uploadTask = ref.putFile(filepath);
 
-        public UploadImage(Bitmap image, String name) {
-            this.image = image;
-            this.name = name;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(Exception exception) {
+                    Toast.makeText(UploadActivity.this, "Failed to upload", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(UploadActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
