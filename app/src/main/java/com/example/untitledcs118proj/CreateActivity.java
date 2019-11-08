@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.content.Intent;
 
-public class CreateActivity extends MainActivity{
+public class CreateActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
