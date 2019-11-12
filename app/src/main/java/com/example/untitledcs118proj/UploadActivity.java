@@ -15,11 +15,18 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Marker;
+
+import java.io.IOException;
+
 
 public class UploadActivity extends AppCompatActivity {
 
@@ -66,6 +73,16 @@ public class UploadActivity extends AppCompatActivity {
         if(requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data != null){
             filepath = data.getData();
             imageToUpload.setImageURI(filepath);
+
+            // Add image to map (TEMP WIP)
+            String cap = caption.getText().toString();
+            try {
+                Bitmap b = MediaStore.Images.Media.getBitmap(this.getContentResolver(), filepath);
+                MapActivity.mMap.addMarker(new MarkerOptions().position(MapActivity.locLatLng).title(cap)
+                        .icon(BitmapDescriptorFactory.fromBitmap(b)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -84,12 +101,9 @@ public class UploadActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Toast.makeText(UploadActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             });
         }
-    }
-
-    public void returnMap(View view) {
-        finish();
     }
 }
