@@ -54,8 +54,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     public void onMapReady(GoogleMap map) {
         mMap = map;
         LatLng UCSC = new LatLng(36.997541, -122.055628);
-        map.addMarker(new MarkerOptions().position(UCSC).title("UCSC"));
-        map.moveCamera(CameraUpdateFactory.newLatLng(UCSC));
+        mMap.addMarker(new MarkerOptions().position(UCSC).title("UCSC"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(UCSC));
+
+        mMap.setMyLocationEnabled(true);
 
         // Add custom Map Style
         boolean success = map.setMapStyle(new MapStyleOptions(getResources()
@@ -72,7 +74,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 try {
                     locLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                     //mMap.addMarker(new MarkerOptions().position(locLatLng).title("Location"));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locLatLng, 17));
+                    //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locLatLng, 17));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locLatLng, 17));
                 } catch (SecurityException e) {
                     e.printStackTrace();
                 }

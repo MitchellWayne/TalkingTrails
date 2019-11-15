@@ -89,6 +89,7 @@ public class UploadActivity extends AppCompatActivity {
     private void uploadImage() {
         if(filepath != null)
         {
+            // Store to firebase storage
             StorageReference ref = storageReference.child("images/"+filepath.getLastPathSegment());
             UploadTask uploadTask = ref.putFile(filepath);
 
