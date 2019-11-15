@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -21,6 +22,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.firebase.storage.StorageMetadata;
 
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Marker;
@@ -92,6 +94,31 @@ public class UploadActivity extends AppCompatActivity {
             // Store to firebase storage
             StorageReference ref = storageReference.child("images/"+filepath.getLastPathSegment());
             UploadTask uploadTask = ref.putFile(filepath);
+
+            // Get caption
+            String cap = caption.getText().toString();
+            // Get location
+            // (This requires splitting lat and long to cast to string)
+            // (Remember to reverse this when retrieving locations from db)
+
+            // Create file metadata including the content type
+            StorageMetadata metadata = new StorageMetadata.Builder()
+                    .setCustomMetadata("caption", "caption goes here")
+                    .setCustomMetadata("location", "location values here")
+                    .build();
+
+            // Add metadata properties
+            ref.updateMetadata(metadata).addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+                @Override
+                public void onSuccess(StorageMetadata storageMetadata) {
+                    // Updated metadata is in storageMetadata
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Uh-oh, an error occurred!
+                }
+});
 
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
