@@ -23,6 +23,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.firebase.storage.StorageMetadata;
+// Custom Info Window Stuff
+import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
+
 
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Marker;
@@ -75,28 +78,39 @@ public class UploadActivity extends AppCompatActivity {
         if(requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data != null){
             filepath = data.getData();
             imageToUpload.setImageURI(filepath);
-
-            // Add image to map (TEMP WIP)
-            String cap = caption.getText().toString();
-            try {
-                Bitmap b = MediaStore.Images.Media.getBitmap(this.getContentResolver(), filepath);
-                MapActivity.mMap.addMarker(new MarkerOptions().position(MapActivity.locLatLng).title(cap)
-                        .icon(BitmapDescriptorFactory.fromBitmap(b)));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
     private void uploadImage() {
         if(filepath != null)
         {
+            // Add image to map (TEMP WIP) ---------------------------------------------------------
+            // this is on single user side only
+            String cap = caption.getText().toString();
+            try {
+                // Change image to generic symbol
+                Bitmap b = MediaStore.Images.Media.getBitmap(this.getContentResolver(), filepath);
+//                MapActivity.mMap.addMarker(new MarkerOptions().position(MapActivity.locLatLng).title(cap)
+//                        .icon(BitmapDescriptorFactory.fromBitmap(b)));
+
+                Marker marker = MapActivity.mMap.addMarker(new MarkerOptions().position(MapActivity.locLatLng).title(cap));
+
+                // Add caption and image to marker metadata
+                MarkerData mData = (MarkerData) new MarkerData();
+                mData.setCaption(cap);
+                mData.setImage(b);
+                marker.setTag(mData);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // -------------------------------------------------------------------------------------
+
             // Store to firebase storage
             StorageReference ref = storageReference.child("images/"+filepath.getLastPathSegment());
             UploadTask uploadTask = ref.putFile(filepath);
 
             // Get caption
-            String cap = caption.getText().toString();
             // Get location
             // (This requires splitting lat and long to cast to string)
             // (Remember to reverse this when retrieving locations from db)
@@ -118,7 +132,7 @@ public class UploadActivity extends AppCompatActivity {
                 public void onFailure(@NonNull Exception exception) {
                     // Uh-oh, an error occurred!
                 }
-});
+            });
 
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override

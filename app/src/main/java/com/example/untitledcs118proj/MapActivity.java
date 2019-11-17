@@ -23,7 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.MapStyleOptions;
 
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
 
     // Location Services
     static GoogleMap mMap;
@@ -53,11 +53,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
-        LatLng UCSC = new LatLng(36.997541, -122.055628);
-        mMap.addMarker(new MarkerOptions().position(UCSC).title("UCSC"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(UCSC));
+//        LatLng UCSC = new LatLng(36.997541, -122.055628);
+//        mMap.addMarker(new MarkerOptions().position(UCSC).title("UCSC"));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(UCSC));
 
         mMap.setMyLocationEnabled(true);
+
+        // Custom Info Window
+        CustomWindowInfo customInfoWindow = new CustomWindowInfo(this);
+        mMap.setInfoWindowAdapter(customInfoWindow);
 
         // Add custom Map Style
         boolean success = map.setMapStyle(new MapStyleOptions(getResources()
