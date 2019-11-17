@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -84,8 +85,8 @@ public class UploadActivity extends AppCompatActivity {
     private void uploadImage() {
         if(filepath != null)
         {
-            // Add image to map (TEMP WIP) ---------------------------------------------------------
-            // this is on single user side only
+            // Add image to map (TEMP WIP) --------------------------------------------------------v
+            // this is on curret user side only
             String cap = caption.getText().toString();
             try {
                 // Change image to generic symbol
@@ -104,35 +105,44 @@ public class UploadActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            // -------------------------------------------------------------------------------------
+            // ------------------------------------------------------------------------------------^
 
-            // Store to firebase storage
-            StorageReference ref = storageReference.child("images/"+filepath.getLastPathSegment());
+            // Store to firebase storage ----------------------------------------------------------v
+            final StorageReference ref = storageReference.child("images/"+filepath.getLastPathSegment());
             UploadTask uploadTask = ref.putFile(filepath);
 
-            // Get caption
             // Get location
             // (This requires splitting lat and long to cast to string)
             // (Remember to reverse this when retrieving locations from db)
+            String loc = ((MapActivity.locLatLng).toString()).substring(8);
+
+            // CODE FOR REVERSING
+//            String[] latlong =  "lat/lng: (36.96378,-122.01857999999999)".split("(");
+//            String[] latlong =  loc.split("(");
+//            latlong = latlong[1].split(")");
+//            latlong = latlong[0].split(",");;
+//            double latitude = Double.parseDouble(latlong[0]);
+//            double longitude = Double.parseDouble(latlong[1]);
+//            LatLng location = new LatLng(latitude, longitude);
 
             // Create file metadata including the content type
-            StorageMetadata metadata = new StorageMetadata.Builder()
-                    .setCustomMetadata("caption", "caption goes here")
-                    .setCustomMetadata("location", "location values here")
+            final StorageMetadata metadata = new StorageMetadata.Builder()
+                    .setCustomMetadata("caption", cap)
+                    .setCustomMetadata("location", loc)
                     .build();
 
-            // Add metadata properties
-            ref.updateMetadata(metadata).addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
-                @Override
-                public void onSuccess(StorageMetadata storageMetadata) {
-                    // Updated metadata is in storageMetadata
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Uh-oh, an error occurred!
-                }
-            });
+//            // Add metadata properties
+//            ref.updateMetadata(metadata).addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+//                @Override
+//                public void onSuccess(StorageMetadata storageMetadata) {
+//                    // Updated metadata is in storageMetadata
+//                }
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception exception) {
+//                    // Uh-oh, an error occurred!
+//                }
+//            });
 
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -143,9 +153,23 @@ public class UploadActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Toast.makeText(UploadActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                    // Update metadata properties right after the upload
+                    ref.updateMetadata(metadata).addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+                        @Override
+                        public void onSuccess(StorageMetadata storageMetadata) {
+                            // Updated metadata is in storageMetadata
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Uh-oh, an error occurred!
+                        }
+                    });
                     finish();
                 }
             });
+
+            // ------------------------------------------------------------------------------------^
         }
     }
 }
