@@ -2,48 +2,72 @@
 <resources>
     <string name="style_json">
 [
-    {
-        \"featureType\": \"road\",
-        \"elementType\": \"geometry\",
-        \"stylers\": [
-            {
-                \"lightness\": 100
-            },
-            {
-                \"visibility\": \"simplified\"
-            }
-        ]
-    },
-    {
-        \"featureType\": \"water\",
-        \"elementType\": \"geometry\",
-        \"stylers\": [
-            {
-                \"visibility\": \"on\"
-            },
-            {
-                \"color\": \"#C6E2FF\"
-            }
-        ]
-    },
-    {
-        \"featureType\": \"poi\",
-        \"elementType\": \"geometry.fill\",
-        \"stylers\": [
-            {
-                \"color\": \"#C5E3BF\"
-            }
-        ]
-    },
-    {
-        \"featureType\": \"road\",
-        \"elementType\": \"geometry.fill\",
-        \"stylers\": [
-            {
-                \"color\": \"#D1D1B8\"
-            }
-        ]
-    }
+  {
+    \"elementType\": \"labels\",
+    \"stylers\": [
+      {
+        \"visibility\": \"off\"
+      }
+    ]
+  },
+  {
+    \"featureType\": \"administrative.land_parcel\",
+    \"stylers\": [
+      {
+        \"visibility\": \"off\"
+      }
+    ]
+  },
+  {
+    \"featureType\": \"administrative.neighborhood\",
+    \"stylers\": [
+      {
+        \"visibility\": \"off\"
+      }
+    ]
+  },
+  {
+    \"featureType\": \"poi\",
+    \"elementType\": \"geometry.fill\",
+    \"stylers\": [
+      {
+        \"color\": \"#C5E3BF\"
+      }
+    ]
+  },
+  {
+    \"featureType\": \"road\",
+    \"elementType\": \"geometry\",
+    \"stylers\": [
+      {
+        \"lightness\": 100
+      },
+      {
+        \"visibility\": \"simplified\"
+      }
+    ]
+  },
+  {
+    \"featureType\": \"road\",
+    \"elementType\": \"geometry.fill\",
+    \"stylers\": [
+      {
+        \"color\": \"#D1D1B8\"
+      }
+    ]
+  },
+  {
+    \"featureType\": \"water\",
+    \"elementType\": \"geometry\",
+    \"stylers\": [
+      {
+        \"color\": \"#C6E2FF\"
+      },
+      {
+        \"visibility\": \"on\"
+      }
+    ]
+  }
 ]
     </string>
 </resources>
