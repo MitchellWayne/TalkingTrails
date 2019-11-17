@@ -10,10 +10,12 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.content.Intent;
 import android.util.Log;
 
+import com.google.android.gms.auth.api.signin.internal.Storage;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,6 +24,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.MapStyleOptions;
+
+import java.util.ArrayList;
+
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.google.firebase.storage.StorageMetadata;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
 
@@ -33,6 +42,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
     private final long MIN_DISTANCE = 5; // 5 meters
     static LatLng locLatLng;
     private static final String TAG = MapActivity.class.getSimpleName();
+
+    // Looping stuff for updating array
+    ArrayList<MarkerData> imgList = new ArrayList<MarkerData>();
+    Handler handler = new Handler();
+    int delay = 30000; //milliseconds
+
+    //Firebase
+    FirebaseStorage storage;
+    StorageReference storageReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +88,20 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
         if (!success) {
             Log.e(TAG, "Style parsing failed.");
         }
+
+        // Refresh object array and determine which objects get saved as markers or drawables ------
+        // ...
+        handler.postDelayed(new Runnable(){
+            public void run(){
+                // Clear and repopulate arraylist "imgList"
+                imgList.clear();
+                // get data from firebase and store to array.
+
+                handler.postDelayed(this, delay);
+            }
+        }, delay);
+
+        // -----------------------------------------------------------------------------------------
 
         // Location Services
         locListen = new LocationListener() {

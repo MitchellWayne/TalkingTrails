@@ -30,8 +30,7 @@
             android:id="@+id/uploadImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Upload"
-            android:onClick=""/>
+            android:text="Upload" />
     </LinearLayout>
 
     <TextView

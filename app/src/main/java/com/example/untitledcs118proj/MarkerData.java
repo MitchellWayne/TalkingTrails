@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 public class MarkerData {
     private Bitmap image;
     private String caption;
+    // Add lnglat
 
     public Bitmap getImage() {
         return image;

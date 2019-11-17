@@ -101,11 +101,19 @@ public class UploadActivity extends AppCompatActivity {
                 mData.setCaption(cap);
                 mData.setImage(b);
                 marker.setTag(mData);
+                //add lnglat
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
             // ------------------------------------------------------------------------------------^
+
+            // NOTE!!!
+            // In addition to firebase storage, we should utilize firestore collections to store
+            // the same filepath segment and necessary metadata for easier access.
+            // In map activity, we will iterate on firestore then sort out the records with
+            // locations that fit in the user radius. THEN we take those record's filepaths
+            // to retrieve the actual image from firebase storage. EZ
 
             // Store to firebase storage ----------------------------------------------------------v
             final StorageReference ref = storageReference.child("images/"+filepath.getLastPathSegment());
@@ -116,7 +124,7 @@ public class UploadActivity extends AppCompatActivity {
             // (Remember to reverse this when retrieving locations from db)
             String loc = ((MapActivity.locLatLng).toString()).substring(8);
 
-            // CODE FOR REVERSING
+            // CODE FOR REVERSING DONT DELETE
 //            String[] latlong =  "lat/lng: (36.96378,-122.01857999999999)".split("(");
 //            String[] latlong =  loc.split("(");
 //            latlong = latlong[1].split(")");
@@ -131,18 +139,6 @@ public class UploadActivity extends AppCompatActivity {
                     .setCustomMetadata("location", loc)
                     .build();
 
-//            // Add metadata properties
-//            ref.updateMetadata(metadata).addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
-//                @Override
-//                public void onSuccess(StorageMetadata storageMetadata) {
-//                    // Updated metadata is in storageMetadata
-//                }
-//            }).addOnFailureListener(new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception exception) {
-//                    // Uh-oh, an error occurred!
-//                }
-//            });
 
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -153,7 +149,8 @@ public class UploadActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Toast.makeText(UploadActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
-                    // Update metadata properties right after the upload
+
+                    // Update metadata properties right after the upload -----------
                     ref.updateMetadata(metadata).addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
                         @Override
                         public void onSuccess(StorageMetadata storageMetadata) {
@@ -165,6 +162,7 @@ public class UploadActivity extends AppCompatActivity {
                             // Uh-oh, an error occurred!
                         }
                     });
+                    // -------------------------------------------------------------
                     finish();
                 }
             });
