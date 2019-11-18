@@ -24,6 +24,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 // Custom Info Window Stuff
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 
@@ -44,6 +47,8 @@ public class UploadActivity extends AppCompatActivity {
     //Firebase
     FirebaseStorage storage;
     StorageReference storageReference;
+    FirebaseDatabase database;
+    DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +57,8 @@ public class UploadActivity extends AppCompatActivity {
         //Firebase
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
+        database = FirebaseDatabase.getInstance();
+        databaseReference = database.getReference();
 
         imageToUpload = (ImageView) findViewById(R.id.imageToUpload);
         uploadButton = (Button) findViewById(R.id.uploadImage);
@@ -86,8 +93,8 @@ public class UploadActivity extends AppCompatActivity {
         if(filepath != null)
         {
             // Add image to map (TEMP WIP) --------------------------------------------------------v
-            // this is on curret user side only
-            String cap = caption.getText().toString();
+            // this is on current user side only
+            String cap = caption.getText().toString().trim();
             try {
                 // Change image to generic symbol
                 Bitmap b = MediaStore.Images.Media.getBitmap(this.getContentResolver(), filepath);
@@ -118,6 +125,9 @@ public class UploadActivity extends AppCompatActivity {
             // Store to firebase storage ----------------------------------------------------------v
             final StorageReference ref = storageReference.child("images/"+filepath.getLastPathSegment());
             UploadTask uploadTask = ref.putFile(filepath);
+            ImageUploadInfo imageUploadInfo = new ImageUploadInfo(cap, filepath.toString());
+            String imageUploadID = databaseReference.push().getKey();
+            databaseReference.child(imageUploadID).setValue(imageUploadInfo);
 
             // Get location
             // (This requires splitting lat and long to cast to string)
