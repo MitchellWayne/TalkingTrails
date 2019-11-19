@@ -2,6 +2,7 @@ package com.example.untitledcs118proj;
 
 import android.graphics.Bitmap;
 
+// For custom info window
 public class MarkerData {
     private Bitmap image;
     private String caption;

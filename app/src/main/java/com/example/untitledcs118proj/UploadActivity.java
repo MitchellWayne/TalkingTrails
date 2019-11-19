@@ -104,6 +104,7 @@ public class UploadActivity extends AppCompatActivity {
                 Marker marker = MapActivity.mMap.addMarker(new MarkerOptions().position(MapActivity.locLatLng).title(cap));
 
                 // Add caption and image to marker metadata
+                // For info window
                 MarkerData mData = (MarkerData) new MarkerData();
                 mData.setCaption(cap);
                 mData.setImage(b);
@@ -122,17 +123,21 @@ public class UploadActivity extends AppCompatActivity {
             // locations that fit in the user radius. THEN we take those record's filepaths
             // to retrieve the actual image from firebase storage. EZ
 
-            // Store to firebase storage ----------------------------------------------------------v
-            final StorageReference ref = storageReference.child("images/"+filepath.getLastPathSegment());
-            UploadTask uploadTask = ref.putFile(filepath);
-            ImageUploadInfo imageUploadInfo = new ImageUploadInfo(cap, filepath.toString());
-            String imageUploadID = databaseReference.push().getKey();
-            databaseReference.child(imageUploadID).setValue(imageUploadInfo);
-
             // Get location
             // (This requires splitting lat and long to cast to string)
             // (Remember to reverse this when retrieving locations from db)
             String loc = ((MapActivity.locLatLng).toString()).substring(8);
+
+            // Store to firebase ------------------------------------------------------------------v
+
+            // Store to storage
+            final StorageReference ref = storageReference.child("images/"+filepath.getLastPathSegment());
+            UploadTask uploadTask = ref.putFile(filepath);
+
+            // Store to database
+            ImageUploadInfo imageUploadInfo = new ImageUploadInfo(cap, filepath.toString(), loc);
+            String imageUploadID = databaseReference.push().getKey();
+            databaseReference.child(imageUploadID).setValue(imageUploadInfo);
 
             // CODE FOR REVERSING DONT DELETE
 //            String[] latlong =  "lat/lng: (36.96378,-122.01857999999999)".split("(");
@@ -143,7 +148,7 @@ public class UploadActivity extends AppCompatActivity {
 //            double longitude = Double.parseDouble(latlong[1]);
 //            LatLng location = new LatLng(latitude, longitude);
 
-            // Create file metadata including the content type
+            /*// Create file metadata including the content type
             final StorageMetadata metadata = new StorageMetadata.Builder()
                     .setCustomMetadata("caption", cap)
                     .setCustomMetadata("location", loc)
@@ -175,8 +180,8 @@ public class UploadActivity extends AppCompatActivity {
                     // -------------------------------------------------------------
                     finish();
                 }
-            });
-
+            });*/
+            finish();
             // ------------------------------------------------------------------------------------^
         }
     }
