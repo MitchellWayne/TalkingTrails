@@ -33,8 +33,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.MapStyleOptions;
+
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
+
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.OnFailureListener;
+
+// ....
+//import com.google.maps.android.SphericalUtil;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -55,6 +62,7 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.AuthResult;
+import com.google.maps.android.SphericalUtil;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
 
@@ -72,6 +80,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
     Handler handler = new Handler();
     int delay = 10000; //milliseconds (10s)
 
+    // Looping stuff for updating proximity
+    Handler proxHandler = new Handler();
+    int proxDelay = 5000; //5s
+
     //Firebase
     FirebaseStorage storage;
     StorageReference storageReference;
@@ -87,13 +99,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
         setContentView(R.layout.activity_map);
 
         // Get handle to fragment
-//        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-//        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-//                PackageManager.PERMISSION_GRANTED);
 
         // Auth
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -104,21 +112,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
         } else {
             mAuth.signInAnonymously();
         }
-
-        /*private void signInAnonymously(){
-            mAuth.signInAnonymously().addOnSuccessListener(this, new  OnSuccessListener<AuthResult>() {
-                @Override
-                public void onSuccess(AuthResult authResult) {
-                    // do your stuff
-                }
-            })
-                    .addOnFailureListener(this, new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            Log.e(TAG, "signInAnonymously:FAILURE", exception);
-                        }
-                    });
-        }*/
 
         // AR switch and listener
         // Replace changed intent
@@ -137,10 +130,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
-//        LatLng UCSC = new LatLng(36.997541, -122.055628);
-//        mMap.addMarker(new MarkerOptions().position(UCSC).title("UCSC"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(UCSC));
-
         mMap.setMyLocationEnabled(true);
 
         // Firebase
@@ -191,44 +180,58 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
                             final LatLng location = new LatLng(latitude, longitude);
                             Log.d("TAG iterate", "Loop" + i);
 
-                            // Get Caption
-                            final String dcap = dmarker.getimageCaption();
+                            // Proximity Check (10m)
+                            // If within user radius, parse rest
+                            if (SphericalUtil.computeDistanceBetween(location, MapActivity.locLatLng) < 10) {
+                                // Get Caption
+                                final String dcap = dmarker.getimageCaption();
 
-                            // Get filepath
-                            String dfilepath = dmarker.getimageURL();
-                            Uri dURI = Uri.parse(dfilepath);
+                                // Get filepath
+                                String dfilepath = dmarker.getimageURL();
+                                Uri dURI = Uri.parse(dfilepath);
 
-                            // Get bitmap image
-                            final Bitmap[] dbitmap = new Bitmap[1];
-                            StorageReference ref = storageReference.child("images/"+dURI.getLastPathSegment());
-                            Log.d("URI", "images/"+dURI.getLastPathSegment());
-                            try {
-                                final File localFile = File.createTempFile("Images", "bmp");
-                                ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener< FileDownloadTask.TaskSnapshot >() {
-                                    @Override
-                                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                        dbitmap[0] = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                                        Log.d("Image Get", "Success");
+                                // Get bitmap image
+                                final Bitmap[] dbitmap = new Bitmap[1];
+                                StorageReference ref = storageReference.child("images/"+dURI.getLastPathSegment());
+                                Log.d("URI", "images/"+dURI.getLastPathSegment());
+                                try {
+                                    final File localFile = File.createTempFile("Images", "bmp");
+                                    ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener< FileDownloadTask.TaskSnapshot >() {
+                                        @Override
+                                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                            dbitmap[0] = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                                            Log.d("Image Get", "Success");
 
-                                        // Add marker
-                                        Marker marker = MapActivity.mMap.addMarker(new MarkerOptions().position(location).title(dcap));
+                                            // Add marker
+                                            Marker marker = MapActivity.mMap.addMarker(new MarkerOptions().position(location).title(dcap));
 
-                                        // Add caption and image to marker metadata
-                                        // For info window
-                                        MarkerData mData = (MarkerData) new MarkerData();
-                                        mData.setCaption(dcap);
-                                        mData.setImage(dbitmap[0]);
-                                        marker.setTag(mData);
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        // Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
-                                        Log.d("Image Get", "Failure");
-                                    }
-                                });
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                                            // Add caption and image to marker metadata
+                                            // For info window
+                                            MarkerData mData = (MarkerData) new MarkerData();
+                                            mData.setCaption(dcap);
+                                            mData.setImage(dbitmap[0]);
+                                            marker.setTag(mData);
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            // Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                            Log.d("Image Get", "Failure");
+                                        }
+                                    });
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            // Else set as circle
+                            else {
+                                CircleOptions circleOptions = new CircleOptions()
+                                        .center(location)
+                                        .radius(10); // In meters
+
+                                // Get back the mutable Circle
+                                Circle circle = mMap.addCircle(circleOptions);
                             }
                         }
                     }
