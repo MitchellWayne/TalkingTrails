@@ -2,6 +2,7 @@ package com.example.untitledcs118proj;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -34,14 +36,16 @@ import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Marker;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URI;
 
 
 public class UploadActivity extends AppCompatActivity {
 
     private static final int RESULT_LOAD_IMAGE = 1;
     ImageView imageToUpload;
-    Button uploadButton;
+    ImageButton uploadButton, cameraButton;
     EditText caption;
     Uri filepath;
     //Firebase
@@ -61,7 +65,10 @@ public class UploadActivity extends AppCompatActivity {
         databaseReference = database.getReference();
 
         imageToUpload = (ImageView) findViewById(R.id.imageToUpload);
-        uploadButton = (Button) findViewById(R.id.uploadImage);
+        uploadButton = (ImageButton) findViewById(R.id.uploadImage);
+
+        cameraButton = (ImageButton) findViewById(R.id.btnCamera);
+
         caption = (EditText) findViewById(R.id.caption);
 
         imageToUpload.setOnClickListener(new View.OnClickListener() {
@@ -78,6 +85,15 @@ public class UploadActivity extends AppCompatActivity {
                 uploadImage();
             }
         });
+
+        //button to open up camera view
+        cameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent,0);
+            }
+        });
     }
 
     @Override
@@ -85,6 +101,14 @@ public class UploadActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data != null){
             filepath = data.getData();
+            imageToUpload.setImageURI(filepath);
+        }
+        else {
+            Bitmap cameraPic = (Bitmap)data.getExtras().get("data");
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            cameraPic.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+            String path = MediaStore.Images.Media.insertImage(this.getContentResolver(), cameraPic,"Title", null);
+            filepath = Uri.parse(path);
             imageToUpload.setImageURI(filepath);
         }
     }
