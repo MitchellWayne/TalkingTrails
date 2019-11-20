@@ -11,9 +11,12 @@ import android.location.LocationManager;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.view.View;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
 import com.google.android.gms.auth.api.signin.internal.Storage;
 import com.google.android.gms.maps.CameraUpdate;
@@ -52,6 +55,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
     FirebaseStorage storage;
     StorageReference storageReference;
 
+    //widget initialization
+    Switch ar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +71,17 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
 
 //        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
 //                PackageManager.PERMISSION_GRANTED);
+
+        ar = (Switch) findViewById(R.id.mapAR);
+        ar.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent,0);
+                //reset switch
+                ar.setChecked(false);
+            }
+        });
 
     }
 
@@ -141,15 +158,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
         }
     }
 
-    public void profile(View view) {
+   /* public void profile(View view) {
         Intent it = new Intent(this,ProfileActivity.class);
         startActivity(it);
-    }
+    }*/
 
-    public void ar(View view) {
-        Intent it = new Intent(this,ARActivity.class);
-        startActivity(it);
-    }
 
     public void upload(View view) {
         Intent it = new Intent(this,UploadActivity.class);
