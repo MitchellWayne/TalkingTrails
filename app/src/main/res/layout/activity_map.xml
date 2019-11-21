@@ -42,9 +42,9 @@
 
     <ImageButton
         android:id="@+id/mapUp"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginBottom="48dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="32dp"
         android:background="@drawable/upload_button_main"
         android:elevation="5dp"
 
@@ -52,7 +52,7 @@
         android:src="@drawable/upload_button_main"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.047"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

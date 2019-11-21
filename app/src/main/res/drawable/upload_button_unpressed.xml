@@ -7,8 +7,8 @@
                 android:color="#ffbb00"
                 />
             <size
-                android:width="90dp"
-                android:height="90dp"/>
+                android:width="70dp"
+                android:height="70dp"/>
         </shape>
     </item>
     <item
