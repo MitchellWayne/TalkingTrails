@@ -107,6 +107,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
                         //Log.d("PL populate", markerData.getimageCaption());
                     }
 
+                    Log.d("PL size", "" + plMarkerList.size() );
+
                     // Cull array based off of large proximity subset
                     // 1 mile max proximity, or 1609 meters
                     for (int i = 0; i < plMarkerList.size(); i++){
@@ -125,10 +127,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
                         // If within max radius, cull
                         if (SphericalUtil.computeDistanceBetween(location, MapActivity.locLatLng) > 1609) {
                             Log.d("PL remove", "Loop" + i);
-                            Log.d("PL remove cap", "" + plMarkerList.get(i).imageCaption);
                             plMarkerList.remove(i);
+                            Log.d("PL remove cap", "" + plMarkerList.get(i).imageCaption);
                         }
                     }
+
+                    Log.d("PL size post cull", "" + plMarkerList.size() );
 
                     // Use method for copy constructor here
                     populatepopList(plMarkerList);
