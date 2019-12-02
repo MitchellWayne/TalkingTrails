@@ -125,11 +125,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
 
                         // Proximity Check (1mi)
                         // If within max radius, cull
-                        if (SphericalUtil.computeDistanceBetween(location, MapActivity.locLatLng) > 1609) {
-                            Log.d("PL remove", "Loop" + i);
-                            plMarkerList.remove(i);
-                            Log.d("PL remove cap", "" + plMarkerList.get(i).imageCaption);
-                        }
+//                        if (SphericalUtil.computeDistanceBetween(location, MapActivity.locLatLng) > 1609) {
+//                            Log.d("PL remove", "Loop" + i);
+//                            plMarkerList.remove(i);
+//                            Log.d("PL remove cap", "" + plMarkerList.get(i).imageCaption);
+//                        }
                     }
 
                     Log.d("PL size post cull", "" + plMarkerList.size() );
@@ -379,7 +379,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
 
         Handler plHandler0 = new Handler(); // I don't know why I made two but I'm afraid it will break
         Handler plHandler = new Handler();
-        int plDelay = 10000;
+        int plDelay = 60000;
 
         Runnable plRun = new Runnable() {
             @Override

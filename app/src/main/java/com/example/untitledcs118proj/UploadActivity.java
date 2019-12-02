@@ -134,7 +134,8 @@ public class UploadActivity extends AppCompatActivity {
 //                MapActivity.mMap.addMarker(new MarkerOptions().position(MapActivity.locLatLng).title(cap)
 //                        .icon(BitmapDescriptorFactory.fromBitmap(b)));
 
-                Marker marker = MapActivity.mMap.addMarker(new MarkerOptions().position(MapActivity.locLatLng).title(cap));
+                Marker marker = MapActivity.mMap.addMarker(new MarkerOptions().position(MapActivity.locLatLng).title(cap)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
                 // Add caption and image to marker metadata
                 // For info window
