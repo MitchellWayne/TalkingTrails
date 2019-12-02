@@ -171,10 +171,9 @@ public class UploadActivity extends AppCompatActivity {
             // Store to database
             ImageUploadInfo imageUploadInfo = new ImageUploadInfo(cap, filepath.toString(), loc);
             String imageUploadID = databaseReference.push().getKey();
-            databaseReference.child(imageUploadID).setValue(imageUploadInfo);
+            databaseReference.child("images/" + imageUploadID).setValue(imageUploadInfo);
 
             // ------------------------------------------------------------------------------------^
-
 
             // Arraylist "populate"
             final ArrayList<ImageUploadInfo> pMarkerList = new ArrayList<ImageUploadInfo>();
@@ -186,7 +185,7 @@ public class UploadActivity extends AppCompatActivity {
                     pMarkerList.clear();
 
                     // get data from firebase and store to array.
-                    databaseReference.addValueEventListener(new ValueEventListener() {
+                    MapActivity.databaseReference.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             for(DataSnapshot item_snapshot:dataSnapshot.getChildren()) {

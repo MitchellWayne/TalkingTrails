@@ -80,7 +80,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
     private static final String TAG = MapActivity.class.getSimpleName();
 
     // Background thread stuff
-    static ArrayList<ImageUploadInfo> popList;
+    static ArrayList<ImageUploadInfo> popList = new ArrayList<ImageUploadInfo>();
     static boolean[] inProx;
     ArrayList<ImageUploadInfo> plMarkerList = new ArrayList<ImageUploadInfo>();
 
@@ -174,7 +174,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
     FirebaseStorage storage;
     StorageReference storageReference;
     FirebaseDatabase database;
-    DatabaseReference databaseReference;
+    static DatabaseReference databaseReference;
 
     //widget initialization
     Switch ar;
@@ -189,15 +189,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        // Auth
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            // do your stuff
-            mAuth.signInAnonymously();
-        } else {
-            mAuth.signInAnonymously();
-        }
+//        // Auth
+//        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+//        FirebaseUser user = mAuth.getCurrentUser();
+//        if (user != null) {
+//            // do your stuff
+//            mAuth.signInAnonymously();
+//        } else {
+//            mAuth.signInAnonymously();
+//        }
 
         // AR switch and listener
         // Replace changed intent
@@ -276,7 +276,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
         database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference();
+        databaseReference = database.getReference("images/");
 
         // Custom Info Window
         CustomWindowInfo customInfoWindow = new CustomWindowInfo(this);
