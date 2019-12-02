@@ -50,6 +50,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 // Firebase
 import com.google.firebase.database.DataSnapshot;
@@ -103,7 +104,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
                     for(DataSnapshot item_snapshot:dataSnapshot.getChildren()) {
                         ImageUploadInfo markerData = item_snapshot.getValue(ImageUploadInfo.class);
                         plMarkerList.add(markerData);
-                        Log.d("PL populate", markerData.getimageCaption());
+                        //Log.d("PL populate", markerData.getimageCaption());
                     }
 
                     // Cull array based off of large proximity subset
@@ -118,14 +119,22 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
                         double latitude = Double.parseDouble(latlong[0]);
                         double longitude = Double.parseDouble(latlong[1]);
                         final LatLng location = new LatLng(latitude, longitude);
-                        Log.d("PL iterate", "Loop" + i);
+                        //Log.d("PL iterate", "Loop" + i);
 
                         // Proximity Check (1mi)
                         // If within max radius, cull
-                        if (SphericalUtil.computeDistanceBetween(location, MapActivity.locLatLng) < 1609) {
+                        if (SphericalUtil.computeDistanceBetween(location, MapActivity.locLatLng) > 1609) {
+                            Log.d("PL remove", "Loop" + i);
+                            Log.d("PL remove cap", "" + plMarkerList.get(i).imageCaption);
                             plMarkerList.remove(i);
                         }
                     }
+
+                    // Use method for copy constructor here
+                    populatepopList(plMarkerList);
+                    // Also init new bool array
+                    inProx = new boolean[plMarkerList.size()];
+
                 }
 
                 @Override
@@ -133,10 +142,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
 
                 }
             });
-            // Use method for copy constructor here
-            populatepopList(plMarkerList);
-            // Also init new bool array
-            inProx = new boolean[plMarkerList.size()];
+//            // Use method for copy constructor here
+//            populatepopList(plMarkerList);
+//            // Also init new bool array
+//            inProx = new boolean[plMarkerList.size()];
         }
     };
 
@@ -203,49 +212,49 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
     @Override
     protected void onStart() {
         super.onStart();
-        if (pl.getStatus() != AsyncTask.Status.RUNNING) {
-            pl.execute();
-        }
-        if (pc.getStatus() != AsyncTask.Status.RUNNING) {
-            pc.execute();
-        }
+//        if (pl.getStatus() != AsyncTask.Status.RUNNING) {
+//            pl.execute();
+//        }
+//        if (pc.getStatus() != AsyncTask.Status.RUNNING) {
+//            pc.execute();
+//        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (pl.getStatus() != AsyncTask.Status.RUNNING) {
-            pl.execute();
-        }
-        if (pc.getStatus() != AsyncTask.Status.RUNNING) {
-            pc.execute();
-        }
+//        if (pl.getStatus() != AsyncTask.Status.RUNNING) {
+//            pl.execute();
+//        }
+//        if (pc.getStatus() != AsyncTask.Status.RUNNING) {
+//            pc.execute();
+//        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (pl.getStatus() == AsyncTask.Status.RUNNING) {
-            pl.stop();
-            pl.cancel(true);
-        }
-        if (pc.getStatus() == AsyncTask.Status.RUNNING) {
-            pc.stop();
-            pc.cancel(true);
-        }
+//        if (pl.getStatus() == AsyncTask.Status.RUNNING) {
+//            pl.stop();
+//            pl.cancel(true);
+//        }
+//        if (pc.getStatus() == AsyncTask.Status.RUNNING) {
+//            pc.stop();
+//            pc.cancel(true);
+//        }
     }
 
     @Override
     protected void onStop(){
         super.onStop();
-        if (pl.getStatus() == AsyncTask.Status.RUNNING) {
-            pl.stop();
-            pl.cancel(true);
-        }
-        if (pc.getStatus() == AsyncTask.Status.RUNNING) {
-            pc.stop();
-            pc.cancel(true);
-        }
+//        if (pl.getStatus() == AsyncTask.Status.RUNNING) {
+//            pl.stop();
+//            pl.cancel(true);
+//        }
+//        if (pc.getStatus() == AsyncTask.Status.RUNNING) {
+//            pc.stop();
+//            pc.cancel(true);
+//        }
     }
 
     @Override
@@ -347,14 +356,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
     public void upload(View view) {
         Intent it = new Intent(this,UploadActivity.class);
 
-        if (pl.getStatus() == AsyncTask.Status.RUNNING) {
-            pl.stop();
-            pl.cancel(true);
-        }
-        if (pc.getStatus() == AsyncTask.Status.RUNNING) {
-            pc.stop();
-            pc.cancel(true);
-        }
+//        if (pl.getStatus() == AsyncTask.Status.RUNNING) {
+//            pl.stop();
+//            pl.cancel(true);
+//        }
+//        if (pc.getStatus() == AsyncTask.Status.RUNNING) {
+//            pc.stop();
+//            pc.cancel(true);
+//        }
 
         startActivity(it);
     }
@@ -366,7 +375,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
 
         Handler plHandler0 = new Handler(); // I don't know why I made two but I'm afraid it will break
         Handler plHandler = new Handler();
-        int plDelay = 60000;
+        int plDelay = 10000;
 
         Runnable plRun = new Runnable() {
             @Override
@@ -379,8 +388,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
         @Override
         protected ArrayList<ImageUploadInfo> doInBackground(Void... voids) {
             // Run plRun with no delay on startup
-            Log.d("Where", "pl dib");
-
             plHandler.post(plRun);
             return null;
         }
@@ -400,7 +407,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
         //boolean[] inProx;
         boolean[] prevProx = new boolean[0];
         Handler pcHandler = new Handler();
-        int pcDelay = 3000;
+        int pcDelay = 2000;
 
         // Arraylist Proximity Check
         Runnable pcRun = new Runnable() {
@@ -416,6 +423,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
                     prevProx = new boolean[pcProxList.size()];
                 }
 
+                //Log.d("PC", "Run + popsize" + popList.size());
+
+
                 // Run proximity calc on pcProxList
                 for (int i = 0; i < pcProxList.size(); i++) {
                     ImageUploadInfo dmarker = pcProxList.get(i);
@@ -427,7 +437,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
                     double latitude = Double.parseDouble(latlong[0]);
                     double longitude = Double.parseDouble(latlong[1]);
                     final LatLng location = new LatLng(latitude, longitude);
-                    Log.d("TAG iterate", "Loop" + i);
+                    //Log.d("TAG iterate", "Loop" + i);
 
                     // Proximity Check (30m)
                     // If within user radius, toggle bool true
@@ -441,7 +451,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
                 }
 
                 // Compare boolean arrays and decide whether to refresh map
-                if (!(inProx.equals(prevProx))) {
+                if (!(Arrays.equals(prevProx,inProx))) {
+                    Log.d("PC", "Clearing Map");
                     mMap.clear();
 
                     for (int i = 0; i < pcProxList.size(); i++) {
@@ -454,7 +465,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
                         double latitude = Double.parseDouble(latlong[0]);
                         double longitude = Double.parseDouble(latlong[1]);
                         final LatLng location = new LatLng(latitude, longitude);
-                        Log.d("TAG iterate", "Loop" + i);
+                        //Log.d("TAG iterate", "Loop" + i);
 
                         if (inProx[i] == true) {
                             // Get Caption
@@ -529,8 +540,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
 
         @Override
         protected ArrayList<ImageUploadInfo> doInBackground(Void... voids) {
-            Log.d("Where", "pc dib");
-
+            //Log.d("Where", "pc dib");
             pcHandler.postDelayed(pcRun, pcDelay);
             return null;
         }
