@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Talking Trails</string>
-    <string name="appTitle">Untitled CS118 Project</string>
     <string name="splashT">Please Login or Create an account</string>
     <string name="usr">Username</string>
     <string name="pass">Password</string>
