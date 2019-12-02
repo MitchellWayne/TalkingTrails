@@ -6,7 +6,9 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,10 +20,14 @@ import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -35,10 +41,13 @@ import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Marker;
+import com.google.maps.android.SphericalUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Map;
 
 
 public class UploadActivity extends AppCompatActivity {
@@ -163,50 +172,67 @@ public class UploadActivity extends AppCompatActivity {
             String imageUploadID = databaseReference.push().getKey();
             databaseReference.child(imageUploadID).setValue(imageUploadInfo);
 
-            // CODE FOR REVERSING DONT DELETE
-//            String[] latlong =  "lat/lng: (36.96378,-122.01857999999999)".split("(");
-//            String[] latlong =  loc.split("(");
-//            latlong = latlong[1].split(")");
-//            latlong = latlong[0].split(",");;
-//            double latitude = Double.parseDouble(latlong[0]);
-//            double longitude = Double.parseDouble(latlong[1]);
-//            LatLng location = new LatLng(latitude, longitude);
-
-            /*// Create file metadata including the content type
-            final StorageMetadata metadata = new StorageMetadata.Builder()
-                    .setCustomMetadata("caption", cap)
-                    .setCustomMetadata("location", loc)
-                    .build();
+            // ------------------------------------------------------------------------------------^
 
 
-            uploadTask.addOnFailureListener(new OnFailureListener() {
+            // Arraylist "populate"
+            final ArrayList<ImageUploadInfo> pMarkerList = new ArrayList<ImageUploadInfo>();
+
+            Runnable plRunOnce = new Runnable() {
                 @Override
-                public void onFailure(Exception exception) {
-                    Toast.makeText(UploadActivity.this, "Failed to upload", Toast.LENGTH_SHORT).show();
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(UploadActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                public void run() {
+                    // Clear and repopulate arraylist "imgList"
+                    pMarkerList.clear();
 
-                    // Update metadata properties right after the upload -----------
-                    ref.updateMetadata(metadata).addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+                    // get data from firebase and store to array.
+                    databaseReference.addValueEventListener(new ValueEventListener() {
                         @Override
-                        public void onSuccess(StorageMetadata storageMetadata) {
-                            // Updated metadata is in storageMetadata
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for(DataSnapshot item_snapshot:dataSnapshot.getChildren()) {
+                                ImageUploadInfo markerData = item_snapshot.getValue(ImageUploadInfo.class);
+                                pMarkerList.add(markerData);
+                                Log.d("PL populate", markerData.getimageCaption());
+                            }
+
+                            // Cull array based off of large proximity subset
+                            // 1 mile max proximity, or 1609 meters
+                            for (int i = 0; i < pMarkerList.size(); i++){
+                                ImageUploadInfo dmarker = pMarkerList.get(i);
+                                // Get Location
+                                String dloc = dmarker.getloc();
+                                String[] latlong =  dloc.split("\\(");
+                                latlong = latlong[1].split("\\)");
+                                latlong = latlong[0].split(",");
+                                double latitude = Double.parseDouble(latlong[0]);
+                                double longitude = Double.parseDouble(latlong[1]);
+                                final LatLng location = new LatLng(latitude, longitude);
+                                Log.d("PL iterate", "Loop" + i);
+
+                                // Proximity Check (1mi)
+                                // If within max radius, cull
+                                if (SphericalUtil.computeDistanceBetween(location, MapActivity.locLatLng) < 1609) {
+                                    pMarkerList.remove(i);
+                                }
+                            }
                         }
-                    }).addOnFailureListener(new OnFailureListener() {
+
                         @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            // Uh-oh, an error occurred!
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
                         }
                     });
-                    // -------------------------------------------------------------
-                    finish();
+                    // Use method for copy constructor here
+                    MapActivity.populatepopList(pMarkerList);
+                    // Also init new bool array
+                    MapActivity.inProx = new boolean[pMarkerList.size()];
                 }
-            });*/
+            };
+
+            // Update stuff on main popList
+            Handler outerHandle = new Handler();
+            outerHandle.post(plRunOnce);
+
             finish();
-            // ------------------------------------------------------------------------------------^
         }
     }
 }
