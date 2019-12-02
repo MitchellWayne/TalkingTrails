@@ -279,12 +279,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
 
         // Start Background Threads
         // ProxCheck will be delayed by 3s to give PopList time
+        Log.d("Where", "Before .exe");
+
         if (pl.isCancelled()) {
             pl.execute();
         }
         if (pc.isCancelled()) {
             pc.execute();
         }
+        Log.d("Where", "After .exe");
+
 
         // -----------------------------------------------------------------------------------------
 
@@ -371,6 +375,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
         @Override
         protected ArrayList<ImageUploadInfo> doInBackground(Void... voids) {
             // Run plRun with no delay on startup
+            Log.d("Where", "pl dib");
+
             plHandler.post(plRun);
             return null;
         }
@@ -519,6 +525,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
 
         @Override
         protected ArrayList<ImageUploadInfo> doInBackground(Void... voids) {
+            Log.d("Where", "pc dib");
+
             pcHandler.postDelayed(pcRun, pcDelay);
             return null;
         }
