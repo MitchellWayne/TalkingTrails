@@ -203,10 +203,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
     @Override
     protected void onStart() {
         super.onStart();
-        if (pl.isCancelled()) {
+        if (pl.getStatus() != AsyncTask.Status.RUNNING) {
             pl.execute();
         }
-        if (pc.isCancelled()) {
+        if (pc.getStatus() != AsyncTask.Status.RUNNING) {
             pc.execute();
         }
     }
@@ -214,10 +214,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
     @Override
     protected void onResume() {
         super.onResume();
-        if (pl.isCancelled()) {
+        if (pl.getStatus() != AsyncTask.Status.RUNNING) {
             pl.execute();
         }
-        if (pc.isCancelled()) {
+        if (pc.getStatus() != AsyncTask.Status.RUNNING) {
             pc.execute();
         }
     }
@@ -225,11 +225,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
     @Override
     protected void onPause() {
         super.onPause();
-        if (!pl.isCancelled()) {
+        if (pl.getStatus() == AsyncTask.Status.RUNNING) {
             pl.stop();
             pl.cancel(true);
         }
-        if (!pc.isCancelled()) {
+        if (pc.getStatus() == AsyncTask.Status.RUNNING) {
             pc.stop();
             pc.cancel(true);
         }
@@ -238,11 +238,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
     @Override
     protected void onStop(){
         super.onStop();
-        if (!pl.isCancelled()) {
+        if (pl.getStatus() == AsyncTask.Status.RUNNING) {
             pl.stop();
             pl.cancel(true);
         }
-        if (!pc.isCancelled()) {
+        if (pc.getStatus() == AsyncTask.Status.RUNNING) {
             pc.stop();
             pc.cancel(true);
         }
@@ -281,10 +281,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
         // ProxCheck will be delayed by 3s to give PopList time
         Log.d("Where", "Before .exe");
 
-        if (pl.isCancelled()) {
+        if (pl.getStatus() != AsyncTask.Status.RUNNING) {
+            Log.d("Where", "in pl cancel");
+
             pl.execute();
         }
-        if (pc.isCancelled()) {
+        if (pc.getStatus() != AsyncTask.Status.RUNNING) {
+            Log.d("Where", "in pc cancel");
+
             pc.execute();
         }
         Log.d("Where", "After .exe");
@@ -343,11 +347,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
     public void upload(View view) {
         Intent it = new Intent(this,UploadActivity.class);
 
-        if (!pl.isCancelled()) {
+        if (pl.getStatus() == AsyncTask.Status.RUNNING) {
             pl.stop();
             pl.cancel(true);
         }
-        if (!pc.isCancelled()) {
+        if (pc.getStatus() == AsyncTask.Status.RUNNING) {
             pc.stop();
             pc.cancel(true);
         }
@@ -394,7 +398,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
         // To determine whether or not the map is updated, we compare latest constructed bool array
         // to a previous bool array and see if there were any changes
         //boolean[] inProx;
-        boolean[] prevProx;
+        boolean[] prevProx = new boolean[0];
         Handler pcHandler = new Handler();
         int pcDelay = 3000;
 
