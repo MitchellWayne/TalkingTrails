@@ -15,11 +15,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MapsActivity" />
-<!--
-    <Button
+
+    <ImageButton
         android:id="@+id/mapProfile"
         android:text="Profile"
         android:onClick="profile"
+        android:src="@android:drawable/ic_menu_myplaces"
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,8 +28,7 @@
         android:layout_marginLeft="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-        -->
-
+<!--
     <Switch
         android:id="@+id/mapAR"
         android:layout_width="wrap_content"
@@ -39,6 +39,7 @@
         android:text="AR View"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+        -->
 
     <ImageButton
         android:id="@+id/mapUp"

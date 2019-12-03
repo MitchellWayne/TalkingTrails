@@ -86,6 +86,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
     // Background thread stuff
     static ArrayList<ImageUploadInfo> popList = new ArrayList<ImageUploadInfo>();
+    static ArrayList<ImageUploadInfo> usrList = new ArrayList<ImageUploadInfo>();
     static boolean[] inProx;
     ArrayList<ImageUploadInfo> plMarkerList = new ArrayList<ImageUploadInfo>();
 
@@ -110,6 +111,9 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
                         ImageUploadInfo markerData = item_snapshot.getValue(ImageUploadInfo.class);
                         plMarkerList.add(markerData);
                         //Log.d("PL populate", markerData.getimageCaption());
+                        if (markerData.getuser().equals(MainActivity.currentProfile.getUsername())){
+                            usrList.add(markerData);
+                        }
                     }
 
                     Log.d("PL size", "" + plMarkerList.size() );
@@ -206,6 +210,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
         // AR switch and listener
         // Replace changed intent
+        /*
         ar = (Switch) findViewById(R.id.mapAR);
         ar.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -216,6 +221,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
                 ar.setChecked(false);
             }
         });
+        */
     }
 
     @Override
@@ -375,6 +381,11 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 //            pc.cancel(true);
 //        }
 
+        startActivity(it);
+    }
+
+    public void profile(View view) {
+        Intent it = new Intent(this, ProfileActivity.class);
         startActivity(it);
     }
 
