@@ -42,6 +42,20 @@
                 android:layout_height="wrap_content"
                 android:singleLine="false" />
 
+            <ImageView
+                android:id="@+id/starViews"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:src="@android:drawable/ic_menu_view" />
+
+            <TextView
+                android:id="@+id/markerViews"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="false" />
+
 
         </LinearLayout>
 

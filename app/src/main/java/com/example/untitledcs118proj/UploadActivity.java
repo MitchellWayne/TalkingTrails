@@ -144,6 +144,8 @@ public class UploadActivity extends AppCompatActivity {
                 mData.setCaption(cap);
                 mData.setImage(b);
                 mData.setUser(MainActivity.currentProfile.getUsername());
+                mData.setViews(0);
+                mData.setFilepath(filepath.toString());
                 Log.d("CURRPROF", "" + MainActivity.currentProfile.getUsername());
                 marker.setTag(mData);
                 //add lnglat
@@ -173,9 +175,9 @@ public class UploadActivity extends AppCompatActivity {
 
             // Store to database
             ImageUploadInfo imageUploadInfo = new ImageUploadInfo(cap, filepath.toString(), loc,
-                    MainActivity.currentProfile.getUsername());
+                    MainActivity.currentProfile.getUsername(), 0);
             String imageUploadID = databaseReference.push().getKey();
-            databaseReference.child("images/" + imageUploadID).setValue(imageUploadInfo);
+            databaseReference.child("images/" + filepath.getLastPathSegment()).setValue(imageUploadInfo);
 
             // ------------------------------------------------------------------------------------^
 

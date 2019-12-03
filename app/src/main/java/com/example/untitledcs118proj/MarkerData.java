@@ -7,7 +7,8 @@ public class MarkerData {
     private Bitmap image;
     private String caption;
     private String user;
-    // Add lnglat
+    private int views;
+    private String filepath;
 
     public Bitmap getImage() {
         return image;
@@ -27,6 +28,14 @@ public class MarkerData {
 
     public String getUser() { return user; }
 
-    public void setUser(String u) { this.user = u; }
+    public void setUser(String user) { this.user = user; }
+
+    public int getViews() { return views; }
+
+    public void setViews(int views) { this.views = views; }
+
+    public String getFilepath() { return filepath; }
+
+    public void setFilepath(String filepath) { this.filepath = filepath; }
 
 }
