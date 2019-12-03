@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationListener;
@@ -23,7 +24,9 @@ import android.util.Log;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.internal.Storage;
 import com.google.android.gms.maps.CameraUpdate;
@@ -51,6 +54,8 @@ import java.util.ArrayList;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 // Firebase
 import com.google.firebase.database.DataSnapshot;
@@ -68,7 +73,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.AuthResult;
 import com.google.maps.android.SphericalUtil;
 
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
+public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener, OnMapReadyCallback {
 
     // Location Services
     static GoogleMap mMap;
@@ -80,7 +85,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
     private static final String TAG = MapActivity.class.getSimpleName();
 
     // Background thread stuff
-    static ArrayList<ImageUploadInfo> popList;
+    static ArrayList<ImageUploadInfo> popList = new ArrayList<ImageUploadInfo>();
+    static ArrayList<ImageUploadInfo> usrList = new ArrayList<ImageUploadInfo>();
     static boolean[] inProx;
     ArrayList<ImageUploadInfo> plMarkerList = new ArrayList<ImageUploadInfo>();
 
@@ -98,13 +104,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
             plMarkerList.clear();
 
             // get data from firebase and store to array.
-            databaseReference.addValueEventListener(new ValueEventListener() {
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for(DataSnapshot item_snapshot:dataSnapshot.getChildren()) {
                         ImageUploadInfo markerData = item_snapshot.getValue(ImageUploadInfo.class);
                         plMarkerList.add(markerData);
                         //Log.d("PL populate", markerData.getimageCaption());
+                        if (markerData.getuser().equals(MainActivity.currentProfile.getUsername())){
+                            usrList.add(markerData);
+                        }
                     }
 
                     Log.d("PL size", "" + plMarkerList.size() );
@@ -174,7 +183,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
     FirebaseStorage storage;
     StorageReference storageReference;
     FirebaseDatabase database;
-    DatabaseReference databaseReference;
+    static DatabaseReference databaseReference;
 
     //widget initialization
     Switch ar;
@@ -189,18 +198,19 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        // Auth
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            // do your stuff
-            mAuth.signInAnonymously();
-        } else {
-            mAuth.signInAnonymously();
-        }
+//        // Auth
+//        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+//        FirebaseUser user = mAuth.getCurrentUser();
+//        if (user != null) {
+//            // do your stuff
+//            mAuth.signInAnonymously();
+//        } else {
+//            mAuth.signInAnonymously();
+//        }
 
         // AR switch and listener
         // Replace changed intent
+        /*
         ar = (Switch) findViewById(R.id.mapAR);
         ar.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -211,6 +221,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
                 ar.setChecked(false);
             }
         });
+        */
     }
 
     @Override
@@ -276,11 +287,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
         database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference();
+        databaseReference = database.getReference("images/");
 
         // Custom Info Window
         CustomWindowInfo customInfoWindow = new CustomWindowInfo(this);
         mMap.setInfoWindowAdapter(customInfoWindow);
+        mMap.setOnMarkerClickListener(this);
 
         // Add custom Map Style
         boolean success = map.setMapStyle(new MapStyleOptions(getResources()
@@ -370,6 +382,41 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
 //        }
 
         startActivity(it);
+    }
+
+    public void profile(View view) {
+        Intent it = new Intent(this, ProfileActivity.class);
+        startActivity(it);
+    }
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+        TextView views = findViewById(R.id.markerViews);
+        final MarkerData m = (MarkerData) marker.getTag();
+        int viewCount = m.getViews();
+
+        // Update view count by 1
+//        views.setText(String.valueOf(viewCount + 1));
+
+        Uri fp = Uri.parse(m.getFilepath());
+        final DatabaseReference dR = FirebaseDatabase.getInstance()
+                .getReference("images/" + fp.getLastPathSegment());
+
+        dR.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ImageUploadInfo markerData = new ImageUploadInfo(dataSnapshot.getValue(ImageUploadInfo.class));
+                markerData.setviews(markerData.getviews() + 1);
+                dR.setValue(markerData);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        return false;
     }
 
     // Background Threads -------------------------------------------------------------------------\
@@ -476,8 +523,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
                             final String dcap = dmarker.getimageCaption();
 
                             // Get filepath
-                            String dfilepath = dmarker.getimageURL();
+                            final String dfilepath = dmarker.getimageURL();
                             Uri dURI = Uri.parse(dfilepath);
+
+                            // Get Username
+                            final String duser = dmarker.getuser();
+
+                            // Get Views
+                            final int dviews = dmarker.getviews();
+
 
                             // Get bitmap image
                             final Bitmap[] dbitmap = new Bitmap[1];
@@ -498,6 +552,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
                                         MarkerData mData = (MarkerData) new MarkerData();
                                         mData.setCaption(dcap);
                                         mData.setImage(dbitmap[0]);
+                                        mData.setUser(duser);
+                                        mData.setViews(dviews);
+                                        mData.setFilepath(dfilepath);
                                         marker.setTag(mData);
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
