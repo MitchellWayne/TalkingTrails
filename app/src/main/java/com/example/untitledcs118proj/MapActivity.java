@@ -479,6 +479,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
                             String dfilepath = dmarker.getimageURL();
                             Uri dURI = Uri.parse(dfilepath);
 
+                            // Get Username
+                            final String duser = dmarker.getuser();
+
                             // Get bitmap image
                             final Bitmap[] dbitmap = new Bitmap[1];
                             StorageReference ref = storageReference.child("images/"+dURI.getLastPathSegment());
@@ -498,6 +501,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
                                         MarkerData mData = (MarkerData) new MarkerData();
                                         mData.setCaption(dcap);
                                         mData.setImage(dbitmap[0]);
+                                        mData.setUser(duser);
                                         marker.setTag(mData);
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {

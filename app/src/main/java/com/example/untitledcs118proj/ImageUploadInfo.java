@@ -5,6 +5,7 @@ public class ImageUploadInfo {
     public String imageCaption;
     public String imageURL;
     public String loc;
+    public String user;
 
     public ImageUploadInfo() {
         // Default constructor
@@ -14,12 +15,14 @@ public class ImageUploadInfo {
         this.imageCaption = i.imageCaption;
         this.imageURL = i.imageURL;
         this.loc = i.loc;
+        this.user = i.user;
     }
 
-    public ImageUploadInfo(String imageCaption, String imageURL, String loc) {
+    public ImageUploadInfo(String imageCaption, String imageURL, String loc, String user) {
         this.imageCaption = imageCaption;
         this.imageURL = imageURL;
         this.loc = loc;
+        this.user = user;
     }
 
     public String getimageCaption() {
@@ -33,4 +36,7 @@ public class ImageUploadInfo {
     public String getloc() {
         return loc;
     }
-}
+
+    public String getuser() {
+        return user; }
+    }

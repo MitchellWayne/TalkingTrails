@@ -30,6 +30,7 @@ public class CustomWindowInfo implements GoogleMap.InfoWindowAdapter {
 
         ImageView markerImg = view.findViewById(R.id.markerImg);
         TextView markerCaption = view.findViewById(R.id.markerCaption);
+        TextView markerProfName = view.findViewById(R.id.profName);
 
         // Get marker info from data object
         MarkerData data = (MarkerData) marker.getTag();
@@ -39,6 +40,9 @@ public class CustomWindowInfo implements GoogleMap.InfoWindowAdapter {
 
         // Get image and set to custom info window
         markerImg.setImageBitmap(data.getImage());
+
+        // Set Profile Name
+        markerProfName.setText(data.getUser() + ": ");
 
         return view;
     }

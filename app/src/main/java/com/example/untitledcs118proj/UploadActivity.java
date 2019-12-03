@@ -138,10 +138,13 @@ public class UploadActivity extends AppCompatActivity {
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
                 // Add caption and image to marker metadata
+                // Attach user as well
                 // For info window
                 MarkerData mData = (MarkerData) new MarkerData();
                 mData.setCaption(cap);
                 mData.setImage(b);
+                mData.setUser(MainActivity.currentProfile.getUsername());
+                Log.d("CURRPROF", "" + MainActivity.currentProfile.getUsername());
                 marker.setTag(mData);
                 //add lnglat
 
@@ -169,7 +172,8 @@ public class UploadActivity extends AppCompatActivity {
             UploadTask uploadTask = ref.putFile(filepath);
 
             // Store to database
-            ImageUploadInfo imageUploadInfo = new ImageUploadInfo(cap, filepath.toString(), loc);
+            ImageUploadInfo imageUploadInfo = new ImageUploadInfo(cap, filepath.toString(), loc,
+                    MainActivity.currentProfile.getUsername());
             String imageUploadID = databaseReference.push().getKey();
             databaseReference.child("images/" + imageUploadID).setValue(imageUploadInfo);
 
@@ -231,6 +235,8 @@ public class UploadActivity extends AppCompatActivity {
             // Update stuff on main popList
             Handler outerHandle = new Handler();
             outerHandle.post(plRunOnce);
+
+
 
             finish();
         }
