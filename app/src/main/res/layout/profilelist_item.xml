@@ -15,6 +15,7 @@
         android:id="@+id/imgView_textdata"
         android:layout_width="200dp"
         android:layout_height="100dp"
+        android:textSize="25dp"
         android:layout_toEndOf="@id/imgView_image" />
 
 </RelativeLayout>
