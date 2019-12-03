@@ -43,6 +43,30 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+//        usrName = findViewById(R.id.profileNameView);
+//        usrName.setText(MainActivity.currentProfile.getUsername() + "'s Profile:");
+//
+//        // Get Storage
+//        storage = FirebaseStorage.getInstance();
+//        storageReference = storage.getReference();
+//
+//        listItem = new ArrayList<ProfItem>();
+//        listView = (ListView) findViewById(R.id.imgList);
+//
+//        // Need to make an ArrayList of list items
+//        // Populate it with data from the db
+//        fillArrayList();
+//
+//
+//        // Display images
+//        ProfItemAdapter imgAdapter = new ProfItemAdapter(getApplicationContext(), listItem);
+//        listView.setAdapter(imgAdapter);
+//        Log.d("HERE", ": SET THE ADAPTER!!!!!!!!!!!!");
+
+    }
+
+    public void onResume() {
+        super.onResume();
         usrName = findViewById(R.id.profileNameView);
         usrName.setText(MainActivity.currentProfile.getUsername() + "'s Profile:");
 
@@ -62,7 +86,6 @@ public class ProfileActivity extends AppCompatActivity {
         ProfItemAdapter imgAdapter = new ProfItemAdapter(getApplicationContext(), listItem);
         listView.setAdapter(imgAdapter);
         Log.d("HERE", ": SET THE ADAPTER!!!!!!!!!!!!");
-
     }
 
     private void fillArrayList() {
