@@ -4,43 +4,31 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-// Custom Info Window Stuff
-import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
-
 
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Marker;
@@ -48,9 +36,7 @@ import com.google.maps.android.SphericalUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.Map;
 
 
 public class UploadActivity extends AppCompatActivity {
@@ -138,8 +124,6 @@ public class UploadActivity extends AppCompatActivity {
             try {
                 // Change image to generic symbol
                 Bitmap b = MediaStore.Images.Media.getBitmap(this.getContentResolver(), filepath);
-//                MapActivity.mMap.addMarker(new MarkerOptions().position(MapActivity.locLatLng).title(cap)
-//                        .icon(BitmapDescriptorFactory.fromBitmap(b)));
 
                 Marker marker = MapActivity.mMap.addMarker(new MarkerOptions().position(MapActivity.locLatLng).title(cap)
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
@@ -153,21 +137,12 @@ public class UploadActivity extends AppCompatActivity {
                 mData.setUser(MainActivity.currentProfile.getUsername());
                 mData.setViews(0);
                 mData.setFilepath(filepath.toString());
-                Log.d("CURRPROF", "" + MainActivity.currentProfile.getUsername());
                 marker.setTag(mData);
-                //add lnglat
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
             // ------------------------------------------------------------------------------------^
-
-            // NOTE!!!
-            // In addition to firebase storage, we should utilize firestore collections to store
-            // the same filepath segment and necessary metadata for easier access.
-            // In map activity, we will iterate on firestore then sort out the records with
-            // locations that fit in the user radius. THEN we take those record's filepaths
-            // to retrieve the actual image from firebase storage. EZ
 
             // Get location
             // (This requires splitting lat and long to cast to string)
@@ -204,7 +179,6 @@ public class UploadActivity extends AppCompatActivity {
                             for(DataSnapshot item_snapshot:dataSnapshot.getChildren()) {
                                 ImageUploadInfo markerData = item_snapshot.getValue(ImageUploadInfo.class);
                                 pMarkerList.add(markerData);
-                                Log.d("PL populate", markerData.getimageCaption());
                             }
 
                             // Cull array based off of large proximity subset
@@ -219,7 +193,6 @@ public class UploadActivity extends AppCompatActivity {
                                 double latitude = Double.parseDouble(latlong[0]);
                                 double longitude = Double.parseDouble(latlong[1]);
                                 final LatLng location = new LatLng(latitude, longitude);
-                                Log.d("PL iterate", "Loop" + i);
 
                                 // Proximity Check (1mi)
                                 // If within max radius, cull

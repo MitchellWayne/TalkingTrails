@@ -1,32 +1,21 @@
 package com.example.untitledcs118proj;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationListener;
-import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.view.View;
 import android.content.Intent;
 import android.util.Log;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.Switch;
-import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.internal.Storage;
 import com.google.android.gms.maps.CameraUpdate;
@@ -46,16 +35,10 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.OnFailureListener;
 
-// ....
-//import com.google.maps.android.SphericalUtil;
-
-import java.net.URI;
 import java.util.ArrayList;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 // Firebase
 import com.google.firebase.database.DataSnapshot;
@@ -65,12 +48,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.AuthResult;
 import com.google.maps.android.SphericalUtil;
 
 public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener, OnMapReadyCallback {
@@ -110,14 +88,12 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
                     for(DataSnapshot item_snapshot:dataSnapshot.getChildren()) {
                         ImageUploadInfo markerData = item_snapshot.getValue(ImageUploadInfo.class);
                         plMarkerList.add(markerData);
-                        //Log.d("PL populate", markerData.getimageCaption());
                         if (markerData.getuser().equals(MainActivity.currentProfile.getUsername())){
                             usrList.add(markerData);
                         }
                     }
 
-                    Log.d("PL size", "" + plMarkerList.size() );
-
+                    /*
                     // Cull array based off of large proximity subset
                     // 1 mile max proximity, or 1609 meters
                     for (int i = 0; i < plMarkerList.size(); i++){
@@ -130,18 +106,16 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
                         double latitude = Double.parseDouble(latlong[0]);
                         double longitude = Double.parseDouble(latlong[1]);
                         final LatLng location = new LatLng(latitude, longitude);
-                        //Log.d("PL iterate", "Loop" + i);
 
                         // Proximity Check (1mi)
-                        // If within max radius, cull
-//                        if (SphericalUtil.computeDistanceBetween(location, MapActivity.locLatLng) > 1609) {
-//                            Log.d("PL remove", "Loop" + i);
-//                            plMarkerList.remove(i);
-//                            Log.d("PL remove cap", "" + plMarkerList.get(i).imageCaption);
-//                        }
+                        // If exceeds max radius, cull
+                        if (SphericalUtil.computeDistanceBetween(location, MapActivity.locLatLng) > 1609) {
+                            Log.d("PL remove", "Loop" + i);
+                            plMarkerList.remove(i);
+                            Log.d("PL remove cap", "" + plMarkerList.get(i).imageCaption);
+                        }
                     }
-
-                    Log.d("PL size post cull", "" + plMarkerList.size() );
+                    */
 
                     // Use method for copy constructor here
                     populatepopList(plMarkerList);
@@ -155,29 +129,8 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
                 }
             });
-//            // Use method for copy constructor here
-//            populatepopList(plMarkerList);
-//            // Also init new bool array
-//            inProx = new boolean[plMarkerList.size()];
         }
     };
-
-    /*
-    // Live-ish Location
-    // To re-implement, potentially just init user location right after the clear lmao
-    Circle userProx, user;
-    CircleOptions proxOptions = new CircleOptions()
-            .radius(30) // in meters
-            .strokeWidth(3)
-            .strokeColor(0xffffffff)
-            .fillColor(0x113ddbff);
-
-    CircleOptions userOptions = new CircleOptions()
-            .radius(4) // in meters
-            .strokeWidth(2)
-            .fillColor(0xff0061bd)
-            .strokeColor(0xffffffff);
-     */
 
     //Firebase
     FirebaseStorage storage;
@@ -198,16 +151,6 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-//        // Auth
-//        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-//        FirebaseUser user = mAuth.getCurrentUser();
-//        if (user != null) {
-//            // do your stuff
-//            mAuth.signInAnonymously();
-//        } else {
-//            mAuth.signInAnonymously();
-//        }
-
         // AR switch and listener
         // Replace changed intent
         /*
@@ -227,61 +170,28 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
     @Override
     protected void onStart() {
         super.onStart();
-//        if (pl.getStatus() != AsyncTask.Status.RUNNING) {
-//            pl.execute();
-//        }
-//        if (pc.getStatus() != AsyncTask.Status.RUNNING) {
-//            pc.execute();
-//        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-//        if (pl.getStatus() != AsyncTask.Status.RUNNING) {
-//            pl.execute();
-//        }
-//        if (pc.getStatus() != AsyncTask.Status.RUNNING) {
-//            pc.execute();
-//        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-//        if (pl.getStatus() == AsyncTask.Status.RUNNING) {
-//            pl.stop();
-//            pl.cancel(true);
-//        }
-//        if (pc.getStatus() == AsyncTask.Status.RUNNING) {
-//            pc.stop();
-//            pc.cancel(true);
-//        }
     }
 
     @Override
     protected void onStop(){
         super.onStop();
-//        if (pl.getStatus() == AsyncTask.Status.RUNNING) {
-//            pl.stop();
-//            pl.cancel(true);
-//        }
-//        if (pc.getStatus() == AsyncTask.Status.RUNNING) {
-//            pc.stop();
-//            pc.cancel(true);
-//        }
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
         mMap.setMyLocationEnabled(true);
-        //Dummy circle
-//        CircleOptions dummyOpts = new CircleOptions()
-//                .center(new LatLng(36.997409,-122.055591))
-//                .strokeColor(0x00000000);
-//        userProx = mMap.addCircle(dummyOpts);
-//        user = mMap.addCircle(dummyOpts);
+
 
         // Firebase
         storage = FirebaseStorage.getInstance();
@@ -304,19 +214,13 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
         // Start Background Threads
         // ProxCheck will be delayed by 3s to give PopList time
-        Log.d("Where", "Before .exe");
 
         if (pl.getStatus() != AsyncTask.Status.RUNNING) {
-            Log.d("Where", "in pl cancel");
-
             pl.execute();
         }
         if (pc.getStatus() != AsyncTask.Status.RUNNING) {
-            Log.d("Where", "in pc cancel");
-
             pc.execute();
         }
-        Log.d("Where", "After .exe");
 
 
         // -----------------------------------------------------------------------------------------
@@ -326,14 +230,8 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
             @Override
             public void onLocationChanged(Location location) {
                 try {
-//                    user.remove();
-//                    userProx.remove();
                     locLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    //mMap.addMarker(new MarkerOptions().position(locLatLng).title("Location"));
-                    //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locLatLng, 17));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locLatLng, 17));
-//                    userProx = mMap.addCircle(proxOptions.center(locLatLng));
-//                    user = mMap.addCircle(userOptions.center(locLatLng));
                 } catch (SecurityException e) {
                     e.printStackTrace();
                 }
@@ -363,24 +261,8 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         }
     }
 
-   /* public void profile(View view) {
-        Intent it = new Intent(this,ProfileActivity.class);
-        startActivity(it);
-    }*/
-
-
     public void upload(View view) {
         Intent it = new Intent(this,UploadActivity.class);
-
-//        if (pl.getStatus() == AsyncTask.Status.RUNNING) {
-//            pl.stop();
-//            pl.cancel(true);
-//        }
-//        if (pc.getStatus() == AsyncTask.Status.RUNNING) {
-//            pc.stop();
-//            pc.cancel(true);
-//        }
-
         startActivity(it);
     }
 
@@ -391,12 +273,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
-        TextView views = findViewById(R.id.markerViews);
         final MarkerData m = (MarkerData) marker.getTag();
-        int viewCount = m.getViews();
-
-        // Update view count by 1
-//        views.setText(String.valueOf(viewCount + 1));
 
         Uri fp = Uri.parse(m.getFilepath());
         final DatabaseReference dR = FirebaseDatabase.getInstance()
@@ -474,9 +351,6 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
                     prevProx = new boolean[pcProxList.size()];
                 }
 
-                //Log.d("PC", "Run + popsize" + popList.size());
-
-
                 // Run proximity calc on pcProxList
                 for (int i = 0; i < pcProxList.size(); i++) {
                     ImageUploadInfo dmarker = pcProxList.get(i);
@@ -488,7 +362,6 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
                     double latitude = Double.parseDouble(latlong[0]);
                     double longitude = Double.parseDouble(latlong[1]);
                     final LatLng location = new LatLng(latitude, longitude);
-                    //Log.d("TAG iterate", "Loop" + i);
 
                     // Proximity Check (30m)
                     // If within user radius, toggle bool true
@@ -503,7 +376,6 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
                 // Compare boolean arrays and decide whether to refresh map
                 if (!(Arrays.equals(prevProx,inProx))) {
-                    Log.d("PC", "Clearing Map");
                     mMap.clear();
 
                     for (int i = 0; i < pcProxList.size(); i++) {
@@ -601,7 +473,6 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
         @Override
         protected ArrayList<ImageUploadInfo> doInBackground(Void... voids) {
-            //Log.d("Where", "pc dib");
             pcHandler.postDelayed(pcRun, pcDelay);
             return null;
         }

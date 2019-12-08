@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
                 for (DataSnapshot item_snapshot : dataSnapshot.getChildren()) {
                     Profile pInfo = item_snapshot.getValue(Profile.class);
                     profileList.add(pInfo);
-                    Log.d("profList Size = ", "" + MainActivity.profileList.size());
                 }
             }
 

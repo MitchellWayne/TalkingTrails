@@ -7,7 +7,6 @@ import android.os.Bundle;
 
 import android.util.Log;
 import android.view.View;
-import android.content.Intent;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -45,18 +44,11 @@ public class CreateActivity extends AppCompatActivity {
         Boolean userExists = false;
         Boolean equal = false;
 
-        // Check if valid user and password format
-        // ... not current priority
-
         // Check if existing username
-        Log.d("profList Size = ", "" + MainActivity.profileList.size());
-
         for (int i = 0; i < MainActivity.profileList.size(); i++){
-            Log.d("create stops = ", "1");
 
             Profile currProf = new Profile(MainActivity.profileList.get(i));
             if (currProf.getUsername().equals(sUser)){
-                Log.d("create stops = ", "2");
 
                 Toast.makeText(this, "Username already exists. Choose another.", Toast.LENGTH_LONG).show();
                 userExists = true;
@@ -64,30 +56,20 @@ public class CreateActivity extends AppCompatActivity {
             }
         }
 
-        Log.d("create stops = ", "1.5");
 
         // Check if equal passwords
         if (!userExists) {
-            Log.d("create stops = ", "4");
 
             if (sPass.equals(ePass)) {
-                Log.d("create stops = ", "5");
-
                 equal = true;
             }
             else {
-                Log.d("create stops = ", "6");
-
                 Toast.makeText(this, "Make sure your password matches.", Toast.LENGTH_LONG).show();
             }
         }
 
-        Log.d("create stops = ", "6.5");
-
-
         // If user doesn't exist, create account
         if (!userExists && equal){
-            Log.d("create stops = ", "7");
 
             database = FirebaseDatabase.getInstance();
             databaseReference = database.getReference("users/");
@@ -105,7 +87,6 @@ public class CreateActivity extends AppCompatActivity {
                     for (DataSnapshot item_snapshot : dataSnapshot.getChildren()) {
                         Profile pInfo = item_snapshot.getValue(Profile.class);
                         MainActivity.profileList.add(pInfo);
-                        Log.d("profList Size = ", "" + MainActivity.profileList.size());
                     }
                 }
 
